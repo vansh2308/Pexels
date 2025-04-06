@@ -31,10 +31,6 @@ def parse_args():
                         help='the size of the patches',
                         type=int,
                         default=9)
-    parser.add_argument('-o',
-                        '--output',
-                        help='the file path to save the output image',
-                        default='./data/output/{}')
     return parser.parse_args()
 
 

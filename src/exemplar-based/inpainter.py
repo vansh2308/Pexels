@@ -6,7 +6,6 @@ from skimage.color import rgb2gray, rgb2lab
 
 
 class Inpainter():
-
     def __init__(self, image, mask, patch_size=9):
         """
         Parameters:
