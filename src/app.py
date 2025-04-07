@@ -9,7 +9,16 @@ import fast_marching.inpainter as fm_inpainter
 import os
 
 
-LIGHT_BLUE = "#58C5BC"
+def fast_marching_inpainter(img, mask_img):
+    img = np.array(img)
+    mask_img = np.array(mask_img)
+    img_copy = img.copy()
+    mask = mask_img[:, :, 0].astype(bool, copy=False) if len(mask_img.shape) == 3 else mask_img[:, :].astype(bool, copy=False)
+
+    return fm_inpainter.inpaint(img_copy, mask)
+
+
+LIGHT_BLUE = "rgba(29, 224, 202, 0.5)"
 DEFAULT_STROKE = 3
 DEFAULT_DRAWING_MODE = "polygon"
 DEFAULT_IMAGE = "data/imgs/image4.png"
@@ -44,7 +53,7 @@ except: # 1band greyscale
 # Otherwise draw the mask
 
 canvas_result = st_canvas(
-    fill_color = LIGHT_BLUE,
+    fill_color = "rgba(232, 169, 21, 0.5)",
     stroke_color = LIGHT_BLUE,
     stroke_width = DEFAULT_STROKE,
     background_image = image_to_annotate,
@@ -72,12 +81,11 @@ if canvas_result.image_data is not None: # if there is annotation generate the 
         mask_img = mask_img.resize(size)
 
         exemplar_based_result = exemplar_inpainter.Inpainter(np.array(image_to_annotate), np.array(mask_img), patch_size=9).inpaint()
+
+        fast_marching_result = fast_marching_inpainter(image_to_annotate, mask_img)
+
         tab1.image(exemplar_based_result)
-
-        image_to_annotate_copy = np.array(image_to_annotate.copy())
-        fast_marching_result = fm_inpainter.inpaint(image_to_annotate_copy, np.array(mask_img))
         tab2.image(fast_marching_result)
-
         tab3.text("Hare krishna")
 
         image_to_annotate.save("st/input.png")
