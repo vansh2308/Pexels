@@ -279,5 +279,7 @@ def inpaint(img, mask, radius=5):
             # push neighbor on band
             heapq.heappush(band, (nb_dist, nb_y, nb_x))
 
+    return img 
+
 if __name__ == "__main__":
     pass

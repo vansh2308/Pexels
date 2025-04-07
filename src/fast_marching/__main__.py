@@ -15,7 +15,7 @@ def main():
     mask_img = imageio.imread(args.mask_path)
     mask = mask_img[:, :, 0].astype(bool, copy=False) if len(mask_img.shape) == 3 else mask_img[:, :].astype(bool, copy=False)
 
-    inpainter.inpaint(out, mask, args.radius[0])
+    result = inpainter.inpaint(out, mask, args.radius[0])
     imageio.imwrite('./data/output/fast-marching/{}_res.png'.format(img_base), out)
 
 

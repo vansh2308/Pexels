@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import imageio
 import os
-import datetime
 import time 
 
 from utils.data_structures import Image2BInpainted
