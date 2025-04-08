@@ -6,8 +6,9 @@ from streamlit_drawable_canvas import st_canvas
 from pathlib import Path
 import exemplar_based.inpainter as exemplar_inpainter
 import fast_marching.inpainter as fm_inpainter
-from markov_random_field.utils.eeo import inpaint_image
-import os
+from mrf_inpainting.inpainter import MRFInpainting as MRF_Inpainter
+
+
 
 
 def fast_marching_inpainter(img, mask_img):
@@ -23,13 +24,18 @@ def MRF_Result(img, mask):
     mask_img = np.array(mask)
     img_copy = img.copy()
 
-    return inpaint_image(img=img_copy, mask=mask_img)
+    inpainter = MRF_Inpainter(patch_size=9, search_window=30, alpha=0.8, max_iterations=400)
+    image, mask = inpainter.load_image_and_mask(input_img=img_copy, mask_img=mask_img)
+
+    return inpainter.priority_inpaint()
+
+    # return inpaint_image(img=img_copy, mask=mask_img)
 
 
 
 LIGHT_BLUE = "rgba(29, 224, 202, 0.5)"
-DEFAULT_STROKE = 3
-DEFAULT_DRAWING_MODE = "polygon"
+STROKE_WIDTH = 3
+DRAWING_MODE = "polygon"
 DEFAULT_IMAGE = "data/imgs/image4.png"
 DEFAULT_SIZE = 256
 DEFAULT_MASKS_DIR = Path("masks").resolve() # use absolutes
@@ -41,6 +47,12 @@ st.sidebar.subheader("Image Inpainting Object Removal")
 st.sidebar.text("Click the image to mask, right click to complete the mask. \n It is advisable to upload smaller images (256px x 256px) for faster processing ")
 
 uploaded_image = st.sidebar.file_uploader("Input image:", type=["png", "jpg", "jpeg", "tiff", "tif"]) 
+
+DRAWING_MODE = st.sidebar.selectbox(
+            "Drawing tool:",
+            ("freedraw", "polygon"),
+        )
+STROKE_WIDTH = st.sidebar.slider("Stroke width: ", 1, 25, 3)
 
 # mask_dir = st.sidebar.text_input('Mask directory path:', DEFAULT_MASKS_DIR) # where masks will be saved
 # if mask_dir != DEFAULT_MASKS_DIR:
@@ -64,11 +76,11 @@ except: # 1band greyscale
 canvas_result = st_canvas(
     fill_color = "rgba(232, 169, 21, 0.5)",
     stroke_color = LIGHT_BLUE,
-    stroke_width = DEFAULT_STROKE,
+    stroke_width = STROKE_WIDTH,
     background_image = image_to_annotate,
     height = int(CANVAS_WIDTH * float(nx/ny)) if uploaded_image else DEFAULT_SIZE,
     width = CANVAS_WIDTH if uploaded_image else DEFAULT_SIZE,
-    drawing_mode = DEFAULT_DRAWING_MODE, 
+    drawing_mode = DRAWING_MODE, 
     display_toolbar = False,
 )
 
