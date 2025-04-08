@@ -44,7 +44,8 @@ CANVAS_WIDTH = 500
 st.title("Pexels - Image Inpainting 🌈")
 
 st.sidebar.subheader("Image Inpainting Object Removal")
-st.sidebar.text("Click the image to mask, right click to complete the mask. \n It is advisable to upload smaller images (256px x 256px) for faster processing ")
+
+
 
 uploaded_image = st.sidebar.file_uploader("Input image:", type=["png", "jpg", "jpeg", "tiff", "tif"]) 
 
@@ -52,7 +53,12 @@ DRAWING_MODE = st.sidebar.selectbox(
             "Drawing tool:",
             ("freedraw", "polygon"),
         )
-STROKE_WIDTH = st.sidebar.slider("Stroke width: ", 1, 25, 3)
+
+if DRAWING_MODE == "polygon":
+    st.sidebar.text("Click the image to mask, right click to complete the mask. \n It is advisable to upload smaller images (256px x 256px) for faster processing ")
+
+if DRAWING_MODE == "freedraw":
+    STROKE_WIDTH = st.sidebar.slider("Stroke width: ", 1, 25, 3)
 
 # mask_dir = st.sidebar.text_input('Mask directory path:', DEFAULT_MASKS_DIR) # where masks will be saved
 # if mask_dir != DEFAULT_MASKS_DIR:
