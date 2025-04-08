@@ -1,6 +1,8 @@
 
 import numpy as np
 import sys
+import os
+import imageio
 
 import math
 from scipy import signal
@@ -486,3 +488,70 @@ def generate_linear_diamond_mask(patch_size):
             blend_mask[patch_size-1-i, patch_size-1-j] = val
 
     return blend_mask
+
+
+
+
+def loading_data(folder_path, image_filename, mask_filename, patch_size, stride, thresh=50):
+    image_inpainted_name, _ = os.path.splitext(image_filename)
+    image_inpainted_name = image_inpainted_name + '_'
+
+    # loading the image and the mask
+    image_rgb = imageio.imread(folder_path + '/' + image_filename)
+
+    mask = imageio.imread(folder_path + '/' + mask_filename)
+    if len(mask.shape) == 3:
+        mask = mask[:, :, 0]
+
+    mask = np.greater_equal(mask, thresh).astype(np.uint8)
+    
+    # on the image: set everything that's under the mask to cyan (for debugging purposes
+    cyan = [0, 255, 255]
+    image_rgb[mask.astype(bool), :] = cyan
+    
+    image = Image2BInpainted(image_rgb, mask, patch_size=patch_size, stride=stride)
+    image.inpainting_approach = Image2BInpainted.USING_RBG_VALUES
+    return image, image_inpainted_name
+
+
+def inpaint_image(img=None, mask=None, patch_size=16, stride=8, thresh_uncertainty=10360, max_nr_labels=10, max_nr_iterations=10, thresh=128):
+    """
+    :param thresh: value between 0 and 255 where a high values means the mask has to be extremely certain before it is inpainted.
+    :return:
+    """
+ 
+    if len(mask.shape) == 3:
+        mask = mask[:, :,0]
+    mask = np.greater_equal(mask, thresh).astype(np.uint8)
+
+    cyan = [0, 255, 255]
+    img[mask.astype(bool), :] = cyan
+    image = Image2BInpainted(img, mask, patch_size=patch_size, stride=stride)
+    image.inpainting_approach = Image2BInpainted.USING_RBG_VALUES
+    
+    print("\nNumber of pixels to be inpainted: " + str(np.count_nonzero(image.mask)))
+
+    print("\n... Initialization ...")
+    initialization(image, thresh_uncertainty)
+
+    print("\n... Label pruning ...")
+    label_pruning(image, thresh_uncertainty, max_nr_labels)
+
+    print("\n... Computing pairwise potential matrix ...")
+    compute_pairwise_potential_matrix(image, max_nr_labels)
+
+    print("\n... Computing label cost ...")
+    compute_label_cost(image, max_nr_labels)
+
+    print("\n... Neighborhood consensus message passing ...")
+    neighborhood_consensus_message_passing(image, max_nr_labels, max_nr_iterations)
+
+    print("\n... Generating inpainted image ...")
+    generate_inpainted_image(image)
+
+    return image.inpainted
+
+    # filename_inpainted =  './data/output/markov-random-field/' + image_inpainted_name + '_res.jpg'
+    # imageio.imwrite(filename_inpainted, image.inpainted)
+    # plt.imshow(image.inpainted, interpolation='nearest')
+    # plt.show()

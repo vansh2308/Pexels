@@ -6,6 +6,7 @@ from streamlit_drawable_canvas import st_canvas
 from pathlib import Path
 import exemplar_based.inpainter as exemplar_inpainter
 import fast_marching.inpainter as fm_inpainter
+from markov_random_field.utils.eeo import inpaint_image
 import os
 
 
@@ -16,6 +17,14 @@ def fast_marching_inpainter(img, mask_img):
     mask = mask_img[:, :, 0].astype(bool, copy=False) if len(mask_img.shape) == 3 else mask_img[:, :].astype(bool, copy=False)
 
     return fm_inpainter.inpaint(img_copy, mask)
+
+def MRF_Result(img, mask):
+    img = np.array(img)
+    mask_img = np.array(mask)
+    img_copy = img.copy()
+
+    return inpaint_image(img=img_copy, mask=mask_img)
+
 
 
 LIGHT_BLUE = "rgba(29, 224, 202, 0.5)"
@@ -73,7 +82,7 @@ if canvas_result.image_data is not None: # if there is annotation generate the 
 
     btn = st.button("Magic", icon="🌈", type="secondary")
 
-    tab1, tab2, tab3 = st.tabs(["Exemplar-based", "Fast-Marching", "MRF"])
+    tab1, tab2, tab3 = st.tabs(["Exemplar-based", "Fast-Marching", "Markov-Random Field"])
 
     if btn:
         mask_img = Image.fromarray(mask_arr).convert('L')
@@ -81,15 +90,16 @@ if canvas_result.image_data is not None: # if there is annotation generate the 
         mask_img = mask_img.resize(size)
 
         exemplar_based_result = exemplar_inpainter.Inpainter(np.array(image_to_annotate), np.array(mask_img), patch_size=9).inpaint()
+        tab1.image(exemplar_based_result)
 
         fast_marching_result = fast_marching_inpainter(image_to_annotate, mask_img)
-
-        tab1.image(exemplar_based_result)
         tab2.image(fast_marching_result)
-        tab3.text("Hare krishna")
 
-        image_to_annotate.save("st/input.png")
-        mask_img.save("st/mask.png")
+        mrf_result = MRF_Result(image_to_annotate, mask_img)
+        tab3.image(mrf_result)
+
+        # image_to_annotate.save("st/input.png")
+        # mask_img.save("st/mask.png")
 
         #rescale images back to original size
 

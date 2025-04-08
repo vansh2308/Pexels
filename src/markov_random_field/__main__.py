@@ -31,12 +31,12 @@ def loading_data(folder_path, image_filename, mask_filename, patch_size, stride,
     return image, image_inpainted_name
 
 
-def inpaint_image(folder_path, image_filename, mask_filename, patch_size, stride, thresh_uncertainty, max_nr_labels, max_nr_iterations, thresh=128):
+def inpaint_image(folder_path=None, image_filename=None, mask_filename=None, patch_size=16, stride=8, thresh_uncertainty=10360, max_nr_labels=10, max_nr_iterations=10, thresh=128):
     """
     :param thresh: value between 0 and 255 where a high values means the mask has to be extremely certain before it is inpainted.
     :return:
     """
-
+    
     image, image_inpainted_name = loading_data(folder_path, image_filename, mask_filename, patch_size, stride, thresh=thresh)
     
     print("\nNumber of pixels to be inpainted: " + str(np.count_nonzero(image.mask)))
@@ -76,7 +76,7 @@ def main():
     image_filename = 'fibers.png'
     mask_filename = 'fibers_mask.jpg'
     
-    inpaint_image(folder_path, image_filename, mask_filename, patch_size, stride, thresh_uncertainty, max_nr_labels, max_nr_iterations)
+    inpaint_image(folder_path=folder_path, image_filename=image_filename, mask_filename=mask_filename, patch_size=patch_size, stride=stride, thresh_uncertainty=thresh_uncertainty, max_nr_labels=max_nr_labels, max_nr_iterations=max_nr_iterations)
 
 
 if __name__ == "__main__":
