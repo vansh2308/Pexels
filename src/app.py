@@ -67,8 +67,10 @@ if DRAWING_MODE == "freedraw":
 
 if uploaded_image: 
     image_to_annotate = Image.open(uploaded_image)
+    uploaded_image = Image.open(uploaded_image)
 else:
     image_to_annotate = Image.open(DEFAULT_IMAGE)
+    uploaded_image = Image.open(DEFAULT_IMAGE)
 
 ## compute input image dimensions for later scalin
 try:
@@ -83,7 +85,7 @@ canvas_result = st_canvas(
     fill_color = "rgba(232, 169, 21, 0.5)",
     stroke_color = LIGHT_BLUE,
     stroke_width = STROKE_WIDTH,
-    background_image = image_to_annotate,
+    background_image = uploaded_image,
     height = int(CANVAS_WIDTH * float(nx/ny)) if uploaded_image else DEFAULT_SIZE,
     width = CANVAS_WIDTH if uploaded_image else DEFAULT_SIZE,
     drawing_mode = DRAWING_MODE, 
