@@ -36,7 +36,7 @@ def MRF_Result(img, mask):
 LIGHT_BLUE = "rgba(29, 224, 202, 0.5)"
 STROKE_WIDTH = 3
 DRAWING_MODE = "polygon"
-DEFAULT_IMAGE = "../data/imgs/image_16.png"
+DEFAULT_IMAGE = "data/imgs/image_16.png"
 DEFAULT_SIZE = 256
 DEFAULT_MASKS_DIR = Path("masks").resolve() # use absolutes
 CANVAS_WIDTH = 500
