@@ -68,6 +68,7 @@ if DRAWING_MODE == "freedraw":
 if uploaded_image: 
     image_to_annotate = Image.open(uploaded_image)
     uploaded_image = Image.open(uploaded_image)
+    st.image(uploaded_image)
 else:
     image_to_annotate = Image.open(DEFAULT_IMAGE)
     uploaded_image = Image.open(DEFAULT_IMAGE)
