@@ -40,7 +40,7 @@ scipy==1.15.2
 six==1.17.0
 smmap==5.0.2
 streamlit==1.40.0
-streamlit-drawable-canvas==0.9.3
+streamlit-drawable-canvas==0.8.0
 tenacity==9.1.2
 tifffile==2025.3.30
 toml==0.10.2
